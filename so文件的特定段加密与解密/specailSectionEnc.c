@@ -3,7 +3,8 @@
 #include<unistd.h>
 #include<string.h>
 #include<fcntl.h>  //create or open file if you use 
-int main(int argc,char* argv[])
+#include<stdlib.h>
+void main(int argc,char* argv[])
 {
     int fd;
     char *shstr=NULL;
@@ -27,19 +28,19 @@ int main(int argc,char* argv[])
       printf("open the input file failed!,try again!");
       return;
   }
-  if(read(fd,&ehdr,sizeof(Elf32_Ehdr)!=sizeof(Elf32_Ehdr))) //if return value don't equal sizeof(ehdr),exit just mean fail 
+  if(read(fd,&ehdr,sizeof(Elf32_Ehdr))!=sizeof(Elf32_Ehdr)) //if return value don't equal sizeof(ehdr),exit just mean fail 
     {
         printf("read file fail!");
         return;
     }
     //change the file pointer
- lseek(fd,ehdr.e_shoff+sizeof(Elf32_Ehdr)*ehdr.e_shstrndx,SEEK_SET);
+ lseek(fd,ehdr.e_shoff+sizeof(Elf32_Shdr)*ehdr.e_shstrndx,SEEK_SET);
   if(read(fd,&shdr,sizeof(Elf32_Shdr))!=sizeof(Elf32_Shdr))
   {
       printf("open the section string table fail");
       return;
   }
-  if((shstr=(char*)malloc(sizeof(shdr.sh_size)))==NULL)
+  if((shstr=(char*)malloc(shdr.sh_size))==NULL)
   {
       printf("Malloc space for section string table failled");
       return;
@@ -102,7 +103,7 @@ int main(int argc,char* argv[])
     free(content);
     free(shstr);
     close(fd);
-    return 0;
+    return;
 
     
 
