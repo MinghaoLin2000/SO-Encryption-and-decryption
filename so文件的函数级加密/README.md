@@ -2,7 +2,7 @@
 ## 前言:  
 so文件中的符号结构体都在.dynsym，符号名都在.dynstr，同时符号结构体在.dynsym中包含了st_name(.dynstr的索引),st_value(符号在文件中的偏移),st_size(函数的大小)，也就是我们找到了.dynsym section，再找到对应的符号结构体，不就可以进行一波函数级加密了
 
-## 加密流程
+## 加密流程  
 1. 找到.dynsym section  
 这里就遇到一个问题，就是之前在段加密时，我们是通过.shstrtab来找到我们想找的节，然而在.shstrtab并没有dynsym这个节的名字，所以需要找到别的法子，书上写一种通过type来找，可是同一种类型的section有多个，这种方法不适合，所以切换了另外一种视角从装载的视角去考虑问题，有一个叫.dynamic的segment，所有.dymstr,.dymsym,.hash section都在这个段里，那我们只需要找到对应segment里面的p_shoff等，就可以找到对应的segment了，但是如何区别这几个段呢？主要是通过这个segmeng中的结构体来进行操作，如下面
 ```
